@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { getShakespeareData } from '../reducers/shakespeareReducer';
-import {SHAKESPEARE_AUTH_TOKEN} from '../config.js'
+import { SHAKESPEARE_AUTH_TOKEN } from '../config.js'
 import Coverflow from 'react-coverflow';
 import { StyleRoot } from 'radium';
 import { Link } from 'react-router-dom'
+import _ from 'underscore'
 
-class shakespeareContainer extends Component {
+class Shakespeare extends Component {
     constructor(props) {
         super(props);
       
@@ -32,20 +32,27 @@ class shakespeareContainer extends Component {
           })
     }
     render() {
+        var HighestRating = _.sortBy(this.state.shakespeareData, 'rating').reverse();
+        var LowestRating = _.sortBy(this.state.shakespeareData, 'rating').reverse();
+        console.log(HighestRating)
         console.log(this.state.shakespeareData)
         var data = this.state.shakespeareData.map( (item,i) => (    
                 <div key={i} style={Styles.container}>
                     <Link id="results-link" to={`/shakespeare/${item.id}`}>    
-                        <div style={Styles.author}>{item.author}</div>
-                        <div style={Styles.date}>{item.publish_date}</div>
-                        <div style={Styles.rating}>{item.rating}</div>
+                        <div style={Styles.author}>Author: {item.author}</div>
+                        <div style={Styles.date}>Publish Date: {item.publish_date}</div>
+                        <div style={Styles.rating}>Rating: {item.rating}</div>
                     </Link>    
                 </div>
         ))
         return (
             <StyleRoot>
             <div style={Styles.wrapper}>
-                {/* <Coverflow
+            <select name="cars">
+                <option value="HighestRating">Ascending</option>
+                <option value="LowestRating">Descending</option>
+            </select>
+                <Coverflow
                     width={960}
                     height={480}
                     displayQuantityOfSide={2}
@@ -62,9 +69,9 @@ class shakespeareContainer extends Component {
                             height: '600px'
                         }
                     }}
-                > */}
+                >
                     {data}
-                {/* </Coverflow> */}
+                </Coverflow>
             </div>
             </StyleRoot>
         );
@@ -83,8 +90,9 @@ const Styles = {
         alignItems: 'center',
         border: '1px solid black',
         borderRadius: '20px',
+        textAlign: 'center'
     }
 
 }
 
-export default (shakespeareContainer);
+export default (Shakespeare);
