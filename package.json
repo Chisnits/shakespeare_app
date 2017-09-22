@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "datejs": "^1.0.0-rc3",
     "react": "^15.6.1",
     "react-coverflow": "^0.2.3",
     "react-dom": "^15.6.1",

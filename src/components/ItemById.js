@@ -20,6 +20,15 @@ class ItemById extends Component {
             .then(body => {
                 body.data.map(item => {
                     if(item.id === this.props.match.params.id){
+                        var updateDate = body.data.map((item,i) => {
+                            var myDate = Date.parse(item.publish_date)
+                            var dateResults = myDate.toString('dddd MMM yyyy')
+                            Object.keys(item).forEach(key => {
+                                if(key === 'publish_date'){
+                                    return item[key] = dateResults
+                                }
+                            })
+                        })
                         this.setState({
                             shakespeareItem: item
                         })
@@ -37,9 +46,9 @@ class ItemById extends Component {
         return (
             <section style={Styles.wrapper}>
                 <div style={Styles.container}>
-                    <div>Author: {this.state.shakespeareItem.author}</div>
-                    <div>Publish Date: {this.state.shakespeareItem.publish_date}</div>
-                    <div>Rating: {this.state.shakespeareItem.rating}</div>
+                    <div>Author:<br/>{this.state.shakespeareItem.author}</div>
+                    <div>Publish Date:<br/> {this.state.shakespeareItem.publish_date}</div>
+                    <div>Rating:<br/> {this.state.shakespeareItem.rating}</div>
                 </div>
             </section>
         );

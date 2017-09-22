@@ -3,7 +3,8 @@ import { SHAKESPEARE_AUTH_TOKEN } from '../config.js'
 import Coverflow from 'react-coverflow';
 import { StyleRoot } from 'radium';
 import { Link } from 'react-router-dom'
-import _ from 'underscore'
+import _ from 'underscore';
+import 'datejs';
 
 class Shakespeare extends Component {
     constructor(props) {
@@ -23,6 +24,15 @@ class Shakespeare extends Component {
           }).then(response => {
             response.json()
             .then(body => {
+                var updateDate = body.data.map((item,i) => {
+                    var myDate = Date.parse(item.publish_date)
+                    var dateResults = myDate.toString('dddd MMM yyyy')
+                    Object.keys(item).forEach(key => {
+                        if(key === 'publish_date'){
+                            item[key] = dateResults
+                        }
+                    })
+                })
               this.setState({
                   shakespeareData: body.data
               })
@@ -32,23 +42,22 @@ class Shakespeare extends Component {
           })
     }
     render() {
-        var HighestRating = _.sortBy(this.state.shakespeareData, 'rating').reverse();
-        var LowestRating = _.sortBy(this.state.shakespeareData, 'rating').reverse();
-        console.log(HighestRating)
         console.log(this.state.shakespeareData)
-        var data = this.state.shakespeareData.map( (item,i) => (    
+        var HighestRating = _.sortBy(this.state.shakespeareData, 'rating').reverse();
+        var LowestRating = _.sortBy(this.state.shakespeareData, 'rating');
+        var data = HighestRating.map((item,i) => (    
                 <div key={i} style={Styles.container}>
-                    <Link id="results-link" to={`/shakespeare/${item.id}`}>    
-                        <div style={Styles.author}>Author: {item.author}</div>
-                        <div style={Styles.date}>Publish Date: {item.publish_date}</div>
-                        <div style={Styles.rating}>Rating: {item.rating}</div>
+                    <Link style={Styles.link} id="results-link" to={`/shakespeare/${item.id}`}>    
+                        <h2 style={Styles.item}>Author:<br/> {item.author}</h2>
+                        <h3 style={Styles.item}>Publish Date:<br/> {item.publish_date} </h3>
+                        <h4 style={Styles.item}>Rating:<br/> {item.rating}</h4>
                     </Link>    
                 </div>
         ))
         return (
             <StyleRoot>
             <div style={Styles.wrapper}>
-            <select name="cars">
+            <select id="rating-filter">
                 <option value="HighestRating">Ascending</option>
                 <option value="LowestRating">Descending</option>
             </select>
@@ -91,6 +100,15 @@ const Styles = {
         border: '1px solid black',
         borderRadius: '20px',
         textAlign: 'center'
+    },
+    item: {
+        color: 'black',
+        cursor: 'pointer',
+        fontDecoration: 'none',
+        textDecoration: 'none',
+    },
+    link: {
+        textDecoration: 'none'
     }
 
 }
