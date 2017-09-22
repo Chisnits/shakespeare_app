@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { getShakespeareData } from '../reducers/shakespeareReducer';
 import {SHAKESPEARE_AUTH_TOKEN} from '../config.js'
-import { connect } from 'react-redux';
 import Coverflow from 'react-coverflow';
 import { StyleRoot } from 'radium';
 import { Link } from 'react-router-dom'
@@ -88,11 +87,4 @@ const Styles = {
 
 }
 
-function mapStateToProps(state) {
-    return {
-      data: state.shakespeareReducer.getData,
-      loading: state.shakespeareReducer.loading,
-    }
-  }
-
-export default connect(mapStateToProps, {getShakespeareData})(shakespeareContainer);
+export default (shakespeareContainer);
