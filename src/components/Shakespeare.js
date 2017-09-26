@@ -5,7 +5,6 @@ import Slider from 'react-slick'
 import _ from 'underscore';
 import 'datejs';
 import Rating from 'react-rating'
-import { Carousel } from 'react-responsive-carousel';
 
 class Shakespeare extends Component {
     constructor(props) {
@@ -42,53 +41,66 @@ class Shakespeare extends Component {
             console.log(err)
           })
     }
+    
     render() {
         console.log(this.state.shakespeareData)
         var HighestRating = _.sortBy(this.state.shakespeareData, 'rating').reverse();
         var LowestRating = _.sortBy(this.state.shakespeareData, 'rating');
-        var data = HighestRating.map((item,i) => (
+        var data = this.state.shakespeareData.map((item,i) => (
                 <div key={i} style={Styles.container}>
-                    <Link style={Styles.link} id="results-link" to={`/shakespeare/${item.id}`}>
-                        <h2 style={Styles.item}>Author:<br/> {item.author}</h2>
-                        <h3 style={Styles.item}>Publish Date:<br/> {item.publish_date} </h3>
-                        <span style={Styles.item}>Rating:</span><br/>
-                        <span style={Styles.item}>{item.rating}</span><br/>
-                        <Rating
-                            initialRate={item.rating}
-                            empty="fa fa-star-o fa-2x"
-                            full="fa fa-star fa-2x"
-                            readonly
-                            style={Styles.stars}
-                        />
-                    </Link>    
+                    <div style={Styles.border}>
+                        <Link style={Styles.link} id="results-link" to={`/shakespeare/${item.id}`}>
+                            <h2 style={Styles.item}>Author:<br/> {item.author}</h2>
+                            <h3 style={Styles.item}>Publish Date:<br/> {item.publish_date} </h3>
+                            <span style={Styles.item}>Rating:</span><br/>
+                            <span style={Styles.item}>{item.rating}</span><br/>
+                            <Rating
+                                initialRate={item.rating}
+                                empty="fa fa-star-o fa-2x"
+                                full="fa fa-star fa-2x"
+                                readonly
+                                style={Styles.stars}
+                            />
+                        </Link>
+                    </div>
                 </div>
         ))
+        var settings = {
+            dots: false,
+            infinite: true,
+            speed: 500,
+            slidesToShow: 3,
+            slidesToScroll: 3,
+            centerMode: true,
+            centerPadding: '60px',
+          };
         return (
             <div style={Styles.wrapper}>
-            <select id="rating-filter">
-                <option value="HighestRating">Ascending</option>
-                <option value="LowestRating">Descending</option>
-            </select>
-            <Slider>
-                {data}
-            </Slider>
+                <select id="rating-filter">
+                    <option value="HighestRating">Ascending</option>
+                    <option value="LowestRating">Descending</option>
+                </select>
+                <Slider {...settings}>
+                    {data}
+                </Slider>
             </div>
         );
     }
 }
 const Styles = {    
     wrapper: {
-        display: 'flex',
-        justifyContent: 'space-evenly',
+        // display: 'flex',
+        // justifyContent: 'space-evenly',
     },
     container: {
         display: 'flex',
-        flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'center',
+    },
+    border: {
         border: '1px solid black',
         borderRadius: '20px',
-        textAlign: 'center'
+        textAlign: 'center',
+        padding: '15px'
     },
     item: {
         color: 'black',
