@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { SHAKESPEARE_AUTH_TOKEN } from '../config.js'
-import Coverflow from 'react-coverflow';
-import { StyleRoot } from 'radium';
 import { Link } from 'react-router-dom'
+import Slider from 'react-slick'
 import _ from 'underscore';
 import 'datejs';
+import Rating from 'react-rating'
+import { Carousel } from 'react-responsive-carousel';
 
 class Shakespeare extends Component {
     constructor(props) {
@@ -45,54 +46,42 @@ class Shakespeare extends Component {
         console.log(this.state.shakespeareData)
         var HighestRating = _.sortBy(this.state.shakespeareData, 'rating').reverse();
         var LowestRating = _.sortBy(this.state.shakespeareData, 'rating');
-        var data = HighestRating.map((item,i) => (    
+        var data = HighestRating.map((item,i) => (
                 <div key={i} style={Styles.container}>
-                    <Link style={Styles.link} id="results-link" to={`/shakespeare/${item.id}`}>    
+                    <Link style={Styles.link} id="results-link" to={`/shakespeare/${item.id}`}>
                         <h2 style={Styles.item}>Author:<br/> {item.author}</h2>
                         <h3 style={Styles.item}>Publish Date:<br/> {item.publish_date} </h3>
-                        <h4 style={Styles.item}>Rating:<br/> {item.rating}</h4>
+                        <span style={Styles.item}>Rating:</span><br/>
+                        <span style={Styles.item}>{item.rating}</span><br/>
+                        <Rating
+                            initialRate={item.rating}
+                            empty="fa fa-star-o fa-2x"
+                            full="fa fa-star fa-2x"
+                            readonly
+                            style={Styles.stars}
+                        />
                     </Link>    
                 </div>
         ))
         return (
-            <StyleRoot>
             <div style={Styles.wrapper}>
             <select id="rating-filter">
                 <option value="HighestRating">Ascending</option>
                 <option value="LowestRating">Descending</option>
             </select>
-                <Coverflow
-                    width={960}
-                    height={480}
-                    displayQuantityOfSide={2}
-                    navigation={true}
-                    enableHeading={false}
-                    startPosition={1}
-                    media={{
-                        '@media (max-width: 900px)': {
-                            width: '600px',
-                            height: '300px'
-                        },
-                        '@media (min-width: 900px)': {
-                            width: '960px',
-                            height: '600px'
-                        }
-                    }}
-                >
-                    {data}
-                </Coverflow>
+            <Slider>
+                {data}
+            </Slider>
             </div>
-            </StyleRoot>
         );
     }
 }
-const Styles = {
+const Styles = {    
     wrapper: {
         display: 'flex',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
     },
     container: {
-        height: '20vh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -109,6 +98,9 @@ const Styles = {
     },
     link: {
         textDecoration: 'none'
+    },
+    stars: {
+        color: '#FFD700'
     }
 
 }
