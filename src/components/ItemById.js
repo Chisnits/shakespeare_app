@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { SHAKESPEARE_AUTH_TOKEN } from '../config'
+import { SHAKESPEARE_AUTH_TOKEN } from '../config';
+import Rating from 'react-rating';
+import { Link } from 'react-router-dom'
 
 class ItemById extends Component {
     constructor(props) {
@@ -42,26 +44,41 @@ class ItemById extends Component {
 
     
     render() {
-        console.log(this.state)
         return (
-            <section style={Styles.wrapper}>
-                <div style={Styles.container}>
-                    <div>Author:<br/>{this.state.shakespeareItem.author}</div>
-                    <div>Publish Date:<br/> {this.state.shakespeareItem.publish_date}</div>
-                    <div>Rating:<br/> {this.state.shakespeareItem.rating}</div>
+            <section style={Styles.wallpaper}>
+                <div><Link to="/"><h1>Home</h1></Link></div>
+                <div style={Styles.wrapper}>
+                    <div style={Styles.container}>
+                    <h2 style={Styles.item}>Author:<br/> {this.state.shakespeareItem.author}</h2>
+                    <h3 style={Styles.item}>Publish Date:<br/> {this.state.shakespeareItem.publish_date} </h3>
+                    <h4 style={Styles.item}>Rating: {this.state.shakespeareItem.rating}</h4>
+                        <Rating
+                            initialRate={this.state.shakespeareItem.rating}
+                            empty="fa fa-star-o fa-2x"
+                            full="fa fa-star fa-2x"
+                            readonly
+                            style={Styles.stars}
+                        />
+                    </div>
                 </div>
             </section>
         );
     }
 }
 const Styles = {
+    wallpaper: {
+        height: '100vh',
+        width: '100%',
+        backgroundImage: `url(${require("../assets/Shakespeare.jpg")})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+    },
     wrapper: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
     },
     container: {
-        height: '20vh',
         width: '25vw',
         display: 'flex',
         flexDirection: 'column',
@@ -69,8 +86,17 @@ const Styles = {
         alignItems: 'center',
         border: '1px solid black',
         borderRadius: '20px',
-        textAlign: 'center'
-    }
+        textAlign: 'center',
+        backgroundColor: '#ffffe6'
+    },
+    item: {
+        color: 'black',
+        textDecoration: 'none',
+        fontSize: '2em',
+    },
+    stars: {
+        color: '#FFD700',
+    },
 
 }
 

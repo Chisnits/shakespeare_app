@@ -16,9 +16,11 @@ class Shakespeare extends Component {
         this.state = {
           originalData: [],
           shakespeareData: [],
-          selectValue: ""
+          ratingSelectValue: "",
+          searchValue: "",
         }
-        this.handleSelect = this.handleSelect.bind(this);
+        this.handleRatingSelect = this.handleRatingSelect.bind(this);
+        // this.handleSearch = this.handleSearch.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -31,7 +33,7 @@ class Shakespeare extends Component {
           }).then(response => {
             response.json()
             .then(body => {
-                var updateDate = body.data.map((item,i) => {
+                body.data.map((item,i) => {
                     var myDate = Date.parse(item.publish_date)
                     var dateResults = myDate.toString('dddd, MMM yyyy')
                     Object.keys(item).forEach(key => {
@@ -49,23 +51,28 @@ class Shakespeare extends Component {
             console.log(err)
           })
     }
-    handleSelect(event) {
-        this.setState({
-            selectValue: event.target.value
-        })
+    handleRatingSelect(event) {
+            this.setState({
+                ratingSelectValue: event.target.value
+            })
       }
+    // handleSearch(event) {
+    //     this.setState({
+    //         searchValue: event.target.value
+    //     })
+    // }
     handleSubmit(event) {
         event.preventDefault();
-        if (this.state.selectValue === 'original'){
+        if (this.state.ratingSelectValue === 'original'){
             this.setState({
               shakespeareData: this.state.originalData
             })
         }
-        else if (this.state.selectValue === 'ascending'){
+        else if (this.state.ratingSelectValue === 'ascending'){
             this.setState({
                 shakespeareData: _.sortBy(this.state.shakespeareData, 'rating').reverse() 
                 })
-        } else if (this.state.selectValue === 'descending'){
+        } else if (this.state.ratingSelectValue === 'descending'){
             this.setState({
                 shakespeareData: _.sortBy(this.state.shakespeareData, 'rating') 
                 })
@@ -73,23 +80,20 @@ class Shakespeare extends Component {
     }
     
     render() {
-        var HighestRating = _.sortBy(this.state.shakespeareData, 'rating').reverse();
-        var LowestRating = _.sortBy(this.state.shakespeareData, 'rating');
-
         var data = this.state.shakespeareData.map((item,i) => (
                 <div key={i} style={Styles.container}>
                     <div style={Styles.border}>
                         <Link style={Styles.link} id="results-link" to={`/shakespeare/${item.id}`}>
-                            <h2 style={Styles.item}>Author:<br/> {item.author}</h2>
-                            <h3 style={Styles.item}>Publish Date:<br/> {item.publish_date} </h3>
-                            <h4 style={Styles.item}>Rating: {item.rating}</h4>
-                            <Rating
-                                initialRate={item.rating}
-                                empty="fa fa-star-o fa-2x"
-                                full="fa fa-star fa-2x"
-                                readonly
-                                style={Styles.stars}
-                            />
+                            <h2 style={{...Styles.item, ...Styles.author}}>Author:<br/> {item.author}</h2>
+                            <h3 style={{...Styles.item, ...Styles.date}}>Publish Date:<br/> {item.publish_date} </h3>
+                            <h4 style={{...Styles.item, ...Styles.rating}}>Rating: {item.rating}</h4>
+                                <Rating
+                                    initialRate={item.rating}
+                                    empty="fa fa-star-o fa-2x"
+                                    full="fa fa-star fa-2x"
+                                    readonly
+                                    style={Styles.stars}
+                                />
                         </Link>
                     </div>
                 </div>
@@ -105,14 +109,18 @@ class Shakespeare extends Component {
           };
         return (
             <div style={Styles.wrapper}>
-                <div><h1>Title</h1></div>
+                <div style={Styles.titleContainer}>
+                    <div style={Styles.title}><h1 style={Styles.titleText}>Shakespeare Reviews</h1></div>
+                </div>
                 <section style={Styles.formContainer}>
-                    <select style={Styles.select} value={this.state.selectValue} onChange={this.handleSelect}>
+                    <h1 style={Styles.ratingTitle}>Rating:</h1>
+                    <select style={Styles.select} value={this.state.ratingSelectValue} onChange={this.handleRatingSelect}>
                             <option value="original">Original</option>
                             <option value="ascending">Ascending</option>
                             <option value="descending">Descending</option>
-                        </select>
+                    </select>
                     <form onSubmit={this.handleSubmit}>
+                        {/* <input type="input" value={this.state.searchValue} onChange={this.handleSearch}/> */}
                         <input style={Styles.submit} className="submit" type="submit"/>
                     </form>
                 </section>    
@@ -126,7 +134,7 @@ class Shakespeare extends Component {
 const Styles = {    
     wrapper: {
         height: '100vh',
-        width: '100vw',
+        width: '100%',
         backgroundImage: `url(${require("../assets/Shakespeare.jpg")})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
@@ -135,22 +143,30 @@ const Styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '50vh',
-        width: '50vw'
     },
     border: {
         border: '1px solid black',
         borderRadius: '20px',
         textAlign: 'center',
         padding: '15px',
-        backgroundColor: '#ffffe6'
+        backgroundColor: '#ffffe6',
+        height: '275px',
+        width: '400px'
     },
     item: {
         color: 'black',
         cursor: 'pointer',
-        fontDecoration: 'none',
         textDecoration: 'none',
         fontSize: '2em',
+    },
+    author: {
+        lineHeight: '40px'
+    },
+    date: {
+        lineHeight: '40px'
+    },
+    rating: {
+        lineHeight: '40px'
     },
     link: {
         textDecoration: 'none'
@@ -158,11 +174,31 @@ const Styles = {
     stars: {
         color: '#FFD700',
     },
+    titleContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    title: {
+        marginTop: '15px',
+        height: '10vh',
+        width: '50%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white'
+    },
+    titleText: {
+        fontSize: '2em'
+    },
     formContainer: {
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
         marginBottom: '10vh'
+    },
+    ratingTitle: {
+        marginTop: '10px',
+        fontSize: '2em'
     },
     select: {
         marginTop: '20px',
@@ -175,9 +211,13 @@ const Styles = {
         width: '7vw',
         borderRadius: '20px',
         backgroundColor: '#ffffe6',
+        fontDecoration: 'none',
+        textDecoration: 'none',
         ':hover' : {
             backgroundColor: '#99ddff',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            fontDecoration: 'none',
+            textDecoration: 'none',
         }
     }
 }

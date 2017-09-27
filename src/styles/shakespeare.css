@@ -1,6 +1,9 @@
 .slides {
     position: relative;
 }
+.slick-slide.slick-active {
+    z-index: 0
+}
 .slick-prev, .slick-next {
     position: absolute;
     top: 50%;
@@ -10,4 +13,19 @@
 }
 .slick-next {
     right: 3%;
+}
+.slick-arrow.slick-prev {
+    z-index: 1
+}
+@media(max-width:1340px){
+    .slick-prev, .slick-next {
+        position: absolute;
+        top: 100%;
+    }
+    .slick-prev {
+        left: 45%;
+    }
+    .slick-next {
+        right: 45%;
+    }
 }
