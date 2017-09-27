@@ -46,7 +46,7 @@ class ItemById extends Component {
     render() {
         return (
             <section style={Styles.wallpaper}>
-                <div><Link to="/"><h1>Home</h1></Link></div>
+                <div style={Styles.headerContainer}><Link to="/" style={Styles.link}><h1 style={Styles.header}>Home</h1></Link></div>
                 <div style={Styles.wrapper}>
                     <div style={Styles.container}>
                     <h2 style={Styles.item}>Author:<br/> {this.state.shakespeareItem.author}</h2>
@@ -73,6 +73,17 @@ const Styles = {
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
     },
+    headerContainer: {
+        
+        
+    },
+    header: {
+        fontSize: '2em',
+        color: 'black'
+    },
+    link: {
+        textDecoration: 'none'
+    },
     wrapper: {
         display: 'flex',
         justifyContent: 'center',
@@ -93,6 +104,7 @@ const Styles = {
         color: 'black',
         textDecoration: 'none',
         fontSize: '2em',
+        lineHeight: '40px'
     },
     stars: {
         color: '#FFD700',

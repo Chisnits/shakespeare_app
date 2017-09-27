@@ -17,10 +17,10 @@
 .slick-arrow.slick-prev {
     z-index: 1
 }
-@media(max-width:1340px){
+@media(max-width:1500px){
     .slick-prev, .slick-next {
         position: absolute;
-        top: 100%;
+        top: 110%;
     }
     .slick-prev {
         left: 45%;
