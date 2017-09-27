@@ -4,15 +4,22 @@ import { Link } from 'react-router-dom'
 import Slider from 'react-slick'
 import _ from 'underscore';
 import 'datejs';
-import Rating from 'react-rating'
+import Rating from 'react-rating';
+import Radium from 'radium';
+
+import '../styles/shakespeare.css'
 
 class Shakespeare extends Component {
     constructor(props) {
         super(props);
       
         this.state = {
-          shakespeareData: []
+          originalData: [],
+          shakespeareData: [],
+          selectValue: ""
         }
+        this.handleSelect = this.handleSelect.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount(){
@@ -26,7 +33,7 @@ class Shakespeare extends Component {
             .then(body => {
                 var updateDate = body.data.map((item,i) => {
                     var myDate = Date.parse(item.publish_date)
-                    var dateResults = myDate.toString('dddd MMM yyyy')
+                    var dateResults = myDate.toString('dddd, MMM yyyy')
                     Object.keys(item).forEach(key => {
                         if(key === 'publish_date'){
                             item[key] = dateResults
@@ -34,6 +41,7 @@ class Shakespeare extends Component {
                     })
                 })
               this.setState({
+                  originalData: body.data,
                   shakespeareData: body.data
               })
             })
@@ -41,19 +49,40 @@ class Shakespeare extends Component {
             console.log(err)
           })
     }
+    handleSelect(event) {
+        this.setState({
+            selectValue: event.target.value
+        })
+      }
+    handleSubmit(event) {
+        event.preventDefault();
+        if (this.state.selectValue === 'original'){
+            this.setState({
+              shakespeareData: this.state.originalData
+            })
+        }
+        else if (this.state.selectValue === 'ascending'){
+            this.setState({
+                shakespeareData: _.sortBy(this.state.shakespeareData, 'rating').reverse() 
+                })
+        } else if (this.state.selectValue === 'descending'){
+            this.setState({
+                shakespeareData: _.sortBy(this.state.shakespeareData, 'rating') 
+                })
+        }
+    }
     
     render() {
-        console.log(this.state.shakespeareData)
         var HighestRating = _.sortBy(this.state.shakespeareData, 'rating').reverse();
         var LowestRating = _.sortBy(this.state.shakespeareData, 'rating');
+
         var data = this.state.shakespeareData.map((item,i) => (
                 <div key={i} style={Styles.container}>
                     <div style={Styles.border}>
                         <Link style={Styles.link} id="results-link" to={`/shakespeare/${item.id}`}>
                             <h2 style={Styles.item}>Author:<br/> {item.author}</h2>
                             <h3 style={Styles.item}>Publish Date:<br/> {item.publish_date} </h3>
-                            <span style={Styles.item}>Rating:</span><br/>
-                            <span style={Styles.item}>{item.rating}</span><br/>
+                            <h4 style={Styles.item}>Rating: {item.rating}</h4>
                             <Rating
                                 initialRate={item.rating}
                                 empty="fa fa-star-o fa-2x"
@@ -71,15 +100,22 @@ class Shakespeare extends Component {
             speed: 500,
             slidesToShow: 3,
             slidesToScroll: 3,
-            centerMode: true,
-            centerPadding: '60px',
+            arrows: true,
+            className: 'slides'
           };
         return (
             <div style={Styles.wrapper}>
-                <select id="rating-filter">
-                    <option value="HighestRating">Ascending</option>
-                    <option value="LowestRating">Descending</option>
-                </select>
+                <div><h1>Title</h1></div>
+                <section style={Styles.formContainer}>
+                    <select style={Styles.select} value={this.state.selectValue} onChange={this.handleSelect}>
+                            <option value="original">Original</option>
+                            <option value="ascending">Ascending</option>
+                            <option value="descending">Descending</option>
+                        </select>
+                    <form onSubmit={this.handleSubmit}>
+                        <input style={Styles.submit} className="submit" type="submit"/>
+                    </form>
+                </section>    
                 <Slider {...settings}>
                     {data}
                 </Slider>
@@ -89,32 +125,62 @@ class Shakespeare extends Component {
 }
 const Styles = {    
     wrapper: {
-        // display: 'flex',
-        // justifyContent: 'space-evenly',
+        height: '100vh',
+        width: '100vw',
+        backgroundImage: `url(${require("../assets/Shakespeare.jpg")})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
     },
     container: {
         display: 'flex',
         justifyContent: 'center',
+        alignItems: 'center',
+        height: '50vh',
+        width: '50vw'
     },
     border: {
         border: '1px solid black',
         borderRadius: '20px',
         textAlign: 'center',
-        padding: '15px'
+        padding: '15px',
+        backgroundColor: '#ffffe6'
     },
     item: {
         color: 'black',
         cursor: 'pointer',
         fontDecoration: 'none',
         textDecoration: 'none',
+        fontSize: '2em',
     },
     link: {
         textDecoration: 'none'
     },
     stars: {
-        color: '#FFD700'
+        color: '#FFD700',
+    },
+    formContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+        marginBottom: '10vh'
+    },
+    select: {
+        marginTop: '20px',
+        height: '3vh',
+        width: '10vw',
+        backgroundColor: '#ffffe6'
+    },
+    submit: {
+        height: '3vh',
+        width: '7vw',
+        borderRadius: '20px',
+        backgroundColor: '#ffffe6',
+        ':hover' : {
+            backgroundColor: '#99ddff',
+            cursor: 'pointer'
+        }
     }
-
 }
+const StyledShakespeare = Radium(Shakespeare)
 
-export default (Shakespeare);
+export default (StyledShakespeare);
