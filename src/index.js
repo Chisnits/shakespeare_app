@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import { BrowserRouter, Route } from 'react-router-dom';
 import Shakespeare from './components/Shakespeare';
-import ItemById from './components/ItemById'
+import ItemById from './components/ItemById';
 
 ReactDOM.render(
         <BrowserRouter>

@@ -22,10 +22,14 @@ h1,h2,h3,h4,h5,h6,input,select {
 .slick-arrow.slick-prev {
     z-index: 1
 }
+.slick-next:before, .slick-prev:before{
+    font-size: 35px;
+}
 @media(max-width:1500px){
     .slick-prev, .slick-next {
         position: absolute;
         top: 110%;
+        font-size: 2em;
     }
     .slick-prev {
         left: 45%;

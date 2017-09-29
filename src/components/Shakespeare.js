@@ -17,7 +17,6 @@ class Shakespeare extends Component {
           originalData: [],
           shakespeareData: [],
           ratingSelectValue: "",
-          searchValue: "",
         }
         this.handleRatingSelect = this.handleRatingSelect.bind(this);
         // this.handleSearch = this.handleSearch.bind(this);
@@ -32,10 +31,11 @@ class Shakespeare extends Component {
               Authorization : SHAKESPEARE_AUTH_TOKEN
             }
             //set authorization header to obtain data
+            //hid auth token in config folder
           }).then(response => {
             response.json()
             .then(body => {
-                //resolves the promise with the result of parsting the body text as JSON
+                //resolves the promise with the result of parsing the body text as JSON
                 body.data.map((item,i) => {
                     var myDate = Date.parse(item.publish_date)
                     var dateResults = myDate.toString('dddd, MMM yyyy')
@@ -62,14 +62,13 @@ class Shakespeare extends Component {
                 ratingSelectValue: event.target.value
             })
       }
-    // handleSearch(event) {
-    //     this.setState({
-    //         searchValue: event.target.value
-    //     })
-    // }
     handleSubmit(event) {
         //event.preventDefault to prevent the component from rerendering on click
         event.preventDefault();
+        //attached a ref to the slider
+        //Whenever the submit button is clicked to change the data being displayed,
+        //the slider will be reset to the 0th index
+        this.refs.slider.slickGoTo(0)
         //check state to see which data you want to be displayed
         //default is the original data
         if (this.state.ratingSelectValue === 'original'){
@@ -98,12 +97,12 @@ class Shakespeare extends Component {
         //imported Rating to display the rating as stars instead of numbers.
         //react-rating allows for fractional stars
         var data = this.state.shakespeareData.map((item,i) => (
-                <section key={i} style={Styles.container}>
-                    <div style={Styles.border} key={i}>
-                        <Link style={Styles.link} id="results-link" to={`/shakespeare/${item.id}`}>
-                            <h2 style={{...Styles.item, ...Styles.author}}>Author:<br/> {item.author}</h2>
-                            <h3 style={{...Styles.item, ...Styles.date}}>Publish Date:<br/> {item.publish_date} </h3>
-                            <h4 style={{...Styles.item, ...Styles.rating}}>Rating: {item.rating}</h4>
+                <section key={i} style={Styles.itemContainer}>
+                    <div style={Styles.itemBorder} key={i}>
+                        <Link style={Styles.itemLink} id="results-link" to={`/shakespeare/${item.id}`}>
+                            <h2 style={{...Styles.item, ...Styles.sliderLineSpacing}}>Author:<br/> {item.author}</h2>
+                            <h3 style={{...Styles.item, ...Styles.sliderLineSpacing}}>Publish Date:<br/> {item.publish_date} </h3>
+                            <h4 style={{...Styles.item, ...Styles.sliderLineSpacing}}>Rating: {item.rating}</h4>
                                 <Rating
                                     initialRate={item.rating}
                                     empty="fa fa-star-o fa-2x"
@@ -123,32 +122,27 @@ class Shakespeare extends Component {
             slidesToShow: 3,
             slidesToScroll: 3,
             arrows: true,
-            className: 'slides'
+            className: 'slides',
           };
-        //   if(this.state.animate === true){
-        //       Styles.animateActive = {
-        //         animationDuration: '3s',
-        //         animationName: 'slideInLeft'
-        //       }
-        //   }
-        console.log(this.refs.slider)
+            console.log(this.refs.slider)
         return (
-            <div style={Styles.wrapper}>
+            <div style={Styles.wallpaper}>
                 <div style={Styles.headerContainer}>
-                    <div style={{ ...Styles.headerTitle, ...Styles.animateActive }}><h1 style={Styles.headerText}>Shakespeare Reviews</h1></div>
+                    <div style={Styles.headerTitle}><h1 style={Styles.headerText}>Shakespeare Reviews</h1></div>
                 </div>
                 <section style={Styles.formContainer}>
-                    <h1 style={Styles.ratingTitle}>Rating:</h1>
-                    <select style={Styles.select} value={this.state.ratingSelectValue} onChange={this.handleRatingSelect}>
+                    <section style={Styles.formRatingContainer}>
+                        <h1 style={Styles.ratingTitle}>Rating:</h1>
+                        <select style={Styles.select} value={this.state.ratingSelectValue} onChange={this.handleRatingSelect}>
                             <option value="original">Original</option>
                             <option value="ascending">Ascending</option>
                             <option value="descending">Descending</option>
-                    </select>
-                    <form onSubmit={this.handleSubmit}>
-                        {/* <input type="input" value={this.state.searchValue} onChange={this.handleSearch}/> */}
-                        <input style={Styles.submit} key="submit" className="submit" type="submit"/>
-                    </form>
-                </section>    
+                        </select>
+                        <form onSubmit={this.handleSubmit}>
+                            <input style={Styles.submit} key="submit" className="submit" type="submit"/>
+                        </form>
+                    </section>
+                </section>
                 <Slider ref="slider" {...settings}>
                     {data}
                 </Slider>
@@ -159,19 +153,19 @@ class Shakespeare extends Component {
 
 //styles object used for inline styling.
 const Styles = {    
-    wrapper: {
+    wallpaper: {
         height: '100vh',
         width: '100%',
         backgroundImage: `url(${require("../assets/Shakespeare.jpg")})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
     },
-    container: {
+    itemContainer: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
     },
-    border: {
+    itemBorder: {
         border: '1px solid black',
         borderRadius: '20px',
         textAlign: 'center',
@@ -180,7 +174,6 @@ const Styles = {
         height: '275px',
         width: '400px',
         overflow: 'auto',
-        minWidth: '230px',
         maxHeight: '265px',
         ':hover' : {
             backgroundColor: '#d1d1c4',
@@ -191,18 +184,12 @@ const Styles = {
         color: 'black',
         cursor: 'pointer',
         textDecoration: 'none',
-        fontSize: '1.5em',
+        fontSize: '1.5em'
     },
-    author: {
+    sliderLineSpacing: {
         lineHeight: '40px'
     },
-    date: {
-        lineHeight: '40px'
-    },
-    rating: {
-        lineHeight: '40px'
-    },
-    link: {
+    itemLink: {
         textDecoration: 'none'
     },
     stars: {
@@ -222,10 +209,10 @@ const Styles = {
         backgroundColor: '#ffffe6',
         borderRadius: '20px',
         whiteSpace: 'nowrap',
-        minWidth: '310px'
+        minWidth: '385px'
     },
     headerText: {
-        fontSize: '2em'
+        fontSize: '2.5em'
     },
     formContainer: {
         display: 'flex',
@@ -233,8 +220,17 @@ const Styles = {
         flexDirection: 'column',
         marginBottom: '10vh'
     },
-    ratingTitle: {
+    formRatingContainer: {
+        backgroundColor: '#ffffe6',
         marginTop: '10px',
+        borderRadius: '20px',
+        padding: '5px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    ratingTitle: {
         fontSize: '2em'
     },
     select: {
@@ -258,7 +254,7 @@ const Styles = {
             fontDecoration: 'none',
             textDecoration: 'none',
         }
-    },
+    }
 }
 //imported Radium to allow for pseudo-selectors in Styles object
 const StyledShakespeare = Radium(Shakespeare)

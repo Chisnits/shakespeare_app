@@ -12,25 +12,33 @@ class ItemById extends Component {
         }
     }
     componentDidMount(){
+        //make http request in componentDidMount so not to slow the render of the component.
         const BASE_URL = "http://shakespeare.podium.co/api/reviews"
           return fetch(BASE_URL, {
             headers: {
               Authorization : SHAKESPEARE_AUTH_TOKEN
             }
+            //set authorization header to obtain data
+            //hid auth token in config folder
           }).then(response => {
             response.json()
+            //resolves the promise with the result of parsing the body text as JSON
             .then(body => {
                 body.data.map(item => {
                     if(item.id === this.props.match.params.id){
+                        //checking to see if the params.id matches
+                        //the id of a specific item 
                         body.data.map((item,i) => {
                             var myDate = Date.parse(item.publish_date)
                             var dateResults = myDate.toString('dddd MMM yyyy')
+                            //convert the Date from the request into desired format
                             Object.keys(item).forEach(key => {
                                 if(key === 'publish_date'){
                                     return item[key] = dateResults
                                 }
                             })
                         })
+                        //set state with item that matches the params.id
                         this.setState({
                             shakespeareItem: item
                         })
@@ -44,6 +52,8 @@ class ItemById extends Component {
 
     
     render() {
+        //imported Rating to display the rating as stars instead of numbers.
+        //react-rating allows for fractional stars
         return (
             <section style={Styles.wallpaper}>
                 <div style={Styles.headerContainer}>
@@ -51,8 +61,8 @@ class ItemById extends Component {
                         <h1 style={Styles.header}>Home</h1>
                     </Link>
                 </div>
-                <div style={Styles.wrapper}>
-                    <div style={Styles.container}>
+                <section style={Styles.itemWrapper}>
+                    <div style={Styles.itemContainer}>
                     <h2 style={Styles.item}>Author:<br/> {this.state.shakespeareItem.author}</h2>
                     <h3 style={Styles.item}>Publish Date:<br/> {this.state.shakespeareItem.publish_date} </h3>
                     <h4 style={Styles.item}>Rating: {this.state.shakespeareItem.rating}</h4>
@@ -64,11 +74,12 @@ class ItemById extends Component {
                             style={Styles.stars}
                         />
                     </div>
-                </div>
+                </section>
             </section>
         );
     }
 }
+//Styles object used for inline styling.
 const Styles = {
     wallpaper: {
         height: '100vh',
@@ -76,25 +87,32 @@ const Styles = {
         backgroundImage: `url(${require("../assets/Shakespeare.jpg")})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     headerContainer: {
-        
-        
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     header: {
-        fontSize: '2em',
+        fontSize: '3em',
         color: 'black'
     },
     link: {
         textDecoration: 'none'
     },
-    wrapper: {
+    itemWrapper: {
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-start',
+        height: '75vh'
     },
-    container: {
+    itemContainer: {
         width: '25vw',
+        height: '50vh',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -107,8 +125,8 @@ const Styles = {
     item: {
         color: 'black',
         textDecoration: 'none',
-        fontSize: '2em',
-        lineHeight: '40px'
+        fontSize: '2.2em',
+        lineHeight: '60px'
     },
     stars: {
         color: '#FFD700',
