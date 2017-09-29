@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { SHAKESPEARE_AUTH_TOKEN } from '../config.js'
-import { Link } from 'react-router-dom'
-import Slider from 'react-slick'
+import { SHAKESPEARE_AUTH_TOKEN } from '../config.js';
+import { Link } from 'react-router-dom';
+import Slider from 'react-slick';
 import _ from 'underscore';
 import 'datejs';
 import Rating from 'react-rating';
@@ -25,17 +25,21 @@ class Shakespeare extends Component {
     }
 
     componentDidMount(){
+        //make http request in componentDidMount so not to slow the render of the component.
         const BASE_URL = "http://shakespeare.podium.co/api/reviews"
           return fetch(BASE_URL, {
             headers: {
               Authorization : SHAKESPEARE_AUTH_TOKEN
             }
+            //set authorization header to obtain data
           }).then(response => {
             response.json()
             .then(body => {
+                //resolves the promise with the result of parsting the body text as JSON
                 body.data.map((item,i) => {
                     var myDate = Date.parse(item.publish_date)
                     var dateResults = myDate.toString('dddd, MMM yyyy')
+                    //convert the Date from the request into desired format
                     Object.keys(item).forEach(key => {
                         if(key === 'publish_date'){
                             item[key] = dateResults
@@ -43,6 +47,7 @@ class Shakespeare extends Component {
                     })
                 })
               this.setState({
+                  //setting original data so that i have unaltered data to restore state to
                   originalData: body.data,
                   shakespeareData: body.data
               })
@@ -52,6 +57,7 @@ class Shakespeare extends Component {
           })
     }
     handleRatingSelect(event) {
+        //set the state of rating select value to the value selected
             this.setState({
                 ratingSelectValue: event.target.value
             })
@@ -62,16 +68,23 @@ class Shakespeare extends Component {
     //     })
     // }
     handleSubmit(event) {
+        //event.preventDefault to prevent the component from rerendering on click
         event.preventDefault();
+        //check state to see which data you want to be displayed
+        //default is the original data
         if (this.state.ratingSelectValue === 'original'){
             this.setState({
               shakespeareData: this.state.originalData
             })
         }
         else if (this.state.ratingSelectValue === 'ascending'){
+            //used Underscore.js
+            //return the data from highest to lowest values based on rating
             this.setState({
                 shakespeareData: _.sortBy(this.state.shakespeareData, 'rating').reverse() 
                 })
+                //used Underscore.js
+                //return the data from lowest to highest values based on rating
         } else if (this.state.ratingSelectValue === 'descending'){
             this.setState({
                 shakespeareData: _.sortBy(this.state.shakespeareData, 'rating') 
@@ -80,9 +93,13 @@ class Shakespeare extends Component {
     }
     
     render() {
+        //map over shakespeare data to return jsx to be rendered below.
+        //Used Link to route the user to a new route with the specific id selected.
+        //imported Rating to display the rating as stars instead of numbers.
+        //react-rating allows for fractional stars
         var data = this.state.shakespeareData.map((item,i) => (
-                <div key={i} style={Styles.container}>
-                    <div style={Styles.border}>
+                <section key={i} style={Styles.container}>
+                    <div style={Styles.border} key={i}>
                         <Link style={Styles.link} id="results-link" to={`/shakespeare/${item.id}`}>
                             <h2 style={{...Styles.item, ...Styles.author}}>Author:<br/> {item.author}</h2>
                             <h3 style={{...Styles.item, ...Styles.date}}>Publish Date:<br/> {item.publish_date} </h3>
@@ -96,8 +113,9 @@ class Shakespeare extends Component {
                                 />
                         </Link>
                     </div>
-                </div>
+                </section>
         ))
+        //settings to be applied to slick-slider`
         var settings = {
             dots: false,
             infinite: true,
@@ -107,10 +125,17 @@ class Shakespeare extends Component {
             arrows: true,
             className: 'slides'
           };
+        //   if(this.state.animate === true){
+        //       Styles.animateActive = {
+        //         animationDuration: '3s',
+        //         animationName: 'slideInLeft'
+        //       }
+        //   }
+        console.log(this.refs.slider)
         return (
             <div style={Styles.wrapper}>
-                <div style={Styles.titleContainer}>
-                    <div style={Styles.title}><h1 style={Styles.titleText}>Shakespeare Reviews</h1></div>
+                <div style={Styles.headerContainer}>
+                    <div style={{ ...Styles.headerTitle, ...Styles.animateActive }}><h1 style={Styles.headerText}>Shakespeare Reviews</h1></div>
                 </div>
                 <section style={Styles.formContainer}>
                     <h1 style={Styles.ratingTitle}>Rating:</h1>
@@ -121,16 +146,18 @@ class Shakespeare extends Component {
                     </select>
                     <form onSubmit={this.handleSubmit}>
                         {/* <input type="input" value={this.state.searchValue} onChange={this.handleSearch}/> */}
-                        <input style={Styles.submit} className="submit" type="submit"/>
+                        <input style={Styles.submit} key="submit" className="submit" type="submit"/>
                     </form>
                 </section>    
-                <Slider {...settings}>
+                <Slider ref="slider" {...settings}>
                     {data}
                 </Slider>
             </div>
         );
     }
 }
+
+//styles object used for inline styling.
 const Styles = {    
     wrapper: {
         height: '100vh',
@@ -151,13 +178,20 @@ const Styles = {
         padding: '15px',
         backgroundColor: '#ffffe6',
         height: '275px',
-        width: '400px'
+        width: '400px',
+        overflow: 'auto',
+        minWidth: '230px',
+        maxHeight: '265px',
+        ':hover' : {
+            backgroundColor: '#d1d1c4',
+            cursor: 'pointer',
+        }
     },
     item: {
         color: 'black',
         cursor: 'pointer',
         textDecoration: 'none',
-        fontSize: '2em',
+        fontSize: '1.5em',
     },
     author: {
         lineHeight: '40px'
@@ -174,20 +208,23 @@ const Styles = {
     stars: {
         color: '#FFD700',
     },
-    titleContainer: {
+    headerContainer: {
         display: 'flex',
         justifyContent: 'center',
     },
-    title: {
+    headerTitle: {
         marginTop: '15px',
         height: '10vh',
         width: '50%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white'
+        backgroundColor: '#ffffe6',
+        borderRadius: '20px',
+        whiteSpace: 'nowrap',
+        minWidth: '310px'
     },
-    titleText: {
+    headerText: {
         fontSize: '2em'
     },
     formContainer: {
@@ -204,7 +241,8 @@ const Styles = {
         marginTop: '20px',
         height: '3vh',
         width: '10vw',
-        backgroundColor: '#ffffe6'
+        backgroundColor: '#ffffe6',
+        minWidth: '70px'
     },
     submit: {
         height: '3vh',
@@ -213,14 +251,16 @@ const Styles = {
         backgroundColor: '#ffffe6',
         fontDecoration: 'none',
         textDecoration: 'none',
+        minWidth: '70px',
         ':hover' : {
-            backgroundColor: '#99ddff',
+            backgroundColor: '#d1d1c4',
             cursor: 'pointer',
             fontDecoration: 'none',
             textDecoration: 'none',
         }
-    }
+    },
 }
+//imported Radium to allow for pseudo-selectors in Styles object
 const StyledShakespeare = Radium(Shakespeare)
 
 export default (StyledShakespeare);

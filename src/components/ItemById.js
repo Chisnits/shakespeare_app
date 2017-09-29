@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { SHAKESPEARE_AUTH_TOKEN } from '../config';
 import Rating from 'react-rating';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 class ItemById extends Component {
     constructor(props) {
@@ -22,7 +22,7 @@ class ItemById extends Component {
             .then(body => {
                 body.data.map(item => {
                     if(item.id === this.props.match.params.id){
-                        var updateDate = body.data.map((item,i) => {
+                        body.data.map((item,i) => {
                             var myDate = Date.parse(item.publish_date)
                             var dateResults = myDate.toString('dddd MMM yyyy')
                             Object.keys(item).forEach(key => {
@@ -46,7 +46,11 @@ class ItemById extends Component {
     render() {
         return (
             <section style={Styles.wallpaper}>
-                <div style={Styles.headerContainer}><Link to="/" style={Styles.link}><h1 style={Styles.header}>Home</h1></Link></div>
+                <div style={Styles.headerContainer}>
+                    <Link to="/" style={Styles.link}>
+                        <h1 style={Styles.header}>Home</h1>
+                    </Link>
+                </div>
                 <div style={Styles.wrapper}>
                     <div style={Styles.container}>
                     <h2 style={Styles.item}>Author:<br/> {this.state.shakespeareItem.author}</h2>
@@ -87,7 +91,7 @@ const Styles = {
     wrapper: {
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     container: {
         width: '25vw',
@@ -111,5 +115,4 @@ const Styles = {
     },
 
 }
-
 export default ItemById;
